@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+
+  <title>Workout</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+    }
+
+    .app {
+      max-width: 480px;
+      min-height: 100vh;
+      margin: auto;
+      padding: 20px;
+      padding-bottom: 40px;
+    }
+
+    header {
+      padding: 20px 0;
+    }
+
+    .small {
+      color: #888;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      margin: 5px 0;
+      font-size: 32px;
+    }
+
+    .card {
+      background: #1d1d1d;
+      border-radius: 22px;
+      padding: 20px;
+      margin-top: 15px;
+    }
+
+    .workout {
+      cursor: pointer;
+      border: 1px solid #292929;
+    }
+
+    .workout:active {
+      transform: scale(.98);
+    }
+
+    .workout h2 {
+      margin: 0 0 8px;
+    }
+
+    .muted {
+      color: #888;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: 0;
+      border-radius: 14px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .start {
+      background: white;
+      color: black;
+      margin-top: 20px;
+    }
+
+    #workoutScreen {
+      display: none;
+    }
+
+    .exercise {
+      text-align: center;
+      padding-top: 30px;
+    }
+
+    .emoji {
+      font-size: 90px;
+      margin: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 30px 0;
+    }
+
+    .stats strong {
+      display: block;
+      font-size: 30px;
+    }
+
+    .stats span {
+      color: #777;
+      font-size: 11px;
+    }
+
+    #restScreen {
+      display: none;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    #timer {
+      font-size: 100px;
+      font-weight: bold;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div id="homeScreen">
+
+    <header>
+      <div class="small">MY WORKOUT</div>
+      <h1>Workout</h1>
+      <p class="muted">Build your body. Stay consistent.</p>
+    </header>
+
+    <div class="card workout" onclick="startWorkout()">
+      <h2>💪 Full Body</h2>
+      <p class="muted">Beginner • 4 exercises</p>
+    </div>
+
+  </div>
+
+
+  <div id="workoutScreen">
+
+    <div class="card exercise">
+
+      <div class="small" id="exerciseNumber">
+        EXERCISE 1 / 4
+      </div>
+
+      <div class="emoji" id="emoji">
+        💪
+      </div>
+
+      <h1 id="exerciseName">
+        Push Up
+      </h1>
+
+      <p class="muted" id="exerciseInfo">
+        3 sets × 12 reps
+      </p>
+
+      <div class="stats">
+
+        <div>
+          <strong id="setNumber">1</strong>
+          <span>SET</span>
+        </div>
+
+        <div>
+          <strong id="repNumber">12</strong>
+          <span>REPS</span>
+        </div>
+
+      </div>
+
+      <button class="start" onclick="completeSet()">
+        COMPLETE SET ✓
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div id="restScreen">
+
+    <div class="small">
+      RECOVERY
+    </div>
+
+    <h1>REST</h1>
+
+    <div id="timer">
+      30
+    </div>
+
+    <p class="muted">
+      Bersiap untuk set berikutnya.
+    </p>
+
+    <button class="start" onclick="skipRest()">
+      SKIP REST
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const exercises = [
+
+  {
+    name: "Push Up",
+    emoji: "💪",
+    sets: 3,
+    reps: 12
+  },
+
+  {
+    name: "Bodyweight Squat",
+    emoji: "🦵",
+    sets: 3,
+    reps: 15
+  },
+
+  {
+    name: "Glute Bridge",
+    emoji: "🍑",
+    sets: 3,
+    reps: 15
+  },
+
+  {
+    name: "Plank",
+    emoji: "🔥",
+    sets: 3,
+    reps: 30
+  }
+
+];
+
+
+let exerciseIndex = 0;
+let currentSet = 1;
+let timerInterval;
+
+
+function startWorkout() {
+
+  exerciseIndex = 0;
+  currentSet = 1;
+
+  document.getElementById("homeScreen").style.display = "none";
+
+  document.getElementById("workoutScreen").style.display = "block";
+
+  updateExercise();
+
+}
+
+
+function updateExercise() {
+
+  const exercise = exercises[exerciseIndex];
+
+  document.getElementById("exerciseNumber").textContent =
+    `EXERCISE ${exerciseIndex + 1} / ${exercises.length}`;
+
+  document.getElementById("emoji").textContent =
+    exercise.emoji;
+
+  document.getElementById("exerciseName").textContent =
+    exercise.name;
+
+  document.getElementById("exerciseInfo").textContent =
+    `${exercise.sets} sets × ${exercise.reps} reps`;
+
+  document.getElementById("setNumber").textContent =
+    currentSet;
+
+  document.getElementById("repNumber").textContent =
+    exercise.reps;
+
+}
+
+
+function completeSet() {
+
+  const exercise = exercises[exerciseIndex];
+
+  if (currentSet < exercise.sets) {
+
+    currentSet++;
+
+    startRest();
+
+  } else {
+
+    exerciseIndex++;
+
+    if (exerciseIndex >= exercises.length) {
+
+      alert("🔥 Workout selesai!");
+
+      document.getElementById("workoutScreen").style.display = "none";
+
+      document.getElementById("homeScreen").style.display = "block";
+
+      return;
+
+    }
+
+    currentSet = 1;
+
+    startRest();
+
+  }
+
+}
+
+
+function startRest() {
+
+  document.getElementById("workoutScreen").style.display = "none";
+
+  document.getElementById("restScreen").style.display = "block";
+
+  let time = 30;
+
+  document.getElementById("timer").textContent = time;
+
+  clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+
+    time--;
+
+    document.getElementById("timer").textContent = time;
+
+    if (time <= 0) {
+
+      clearInterval(timerInterval);
+
+      skipRest();
+
+    }
+
+  }, 1000);
+
+}
+
+
+function skipRest() {
+
+  clearInterval(timerInterval);
+
+  document.getElementById("restScreen").style.display = "none";
+
+  document.getElementById("workoutScreen").style.display = "block";
+
+  updateExercise();
+
+}
+
+</script>
+
+</body>
+  </html>
